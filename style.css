@@ -1,0 +1,122 @@
+*{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ width:100%; height:100%; overflow:hidden; background:#000; font-family:sans-serif; cursor:default; user-select:none; }
+
+.scene{
+  position:fixed; inset:0; opacity:0; pointer-events:none;
+  transition:opacity 1.1s ease;
+  will-change:opacity;
+}
+.scene.active{ opacity:1; pointer-events:auto; }
+
+/* ---------------- MENU (seraphim sigil / start screen) ---------------- */
+
+#scene-menu{ background:#04030a; }
+.menu-bg{
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse at 50% 40%, #241338 0%, #0d0818 55%, #030207 100%);
+}
+.sigil-btn{
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:min(46vw, 46vh); height:min(46vw,46vh);
+  background:none; border:none; cursor:pointer; padding:0;
+}
+.sigil{ width:100%; height:100%; overflow:visible; }
+.wingset{ transform-origin:100px 105px; animation: sigilfloat 4.5s ease-in-out infinite; }
+.wing{ opacity:0.92; transform-origin: 100px 105px; }
+.wing-l1{ fill:#8a6fd8; animation: flapL1 2.6s ease-in-out infinite; }
+.wing-l2{ fill:#5f47a8; animation: flapL2 2.6s ease-in-out infinite; }
+.wing-r1{ fill:#8a6fd8; animation: flapR1 2.6s ease-in-out infinite; }
+.wing-r2{ fill:#5f47a8; animation: flapR2 2.6s ease-in-out infinite; }
+.core{ fill:#ffffff; filter: drop-shadow(0 0 12px #ffffff); }
+
+@keyframes sigilfloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-10px);} }
+@keyframes flapL1{ 0%,100%{ transform:rotate(0deg);} 50%{ transform:rotate(-14deg);} }
+@keyframes flapL2{ 0%,100%{ transform:rotate(0deg);} 50%{ transform:rotate(-9deg);} }
+@keyframes flapR1{ 0%,100%{ transform:rotate(0deg);} 50%{ transform:rotate(14deg);} }
+@keyframes flapR2{ 0%,100%{ transform:rotate(0deg);} 50%{ transform:rotate(9deg);} }
+
+.sigil-btn{ filter: drop-shadow(0 0 30px rgba(140,110,220,0.55)); transition: transform 0.3s ease; }
+.sigil-btn:hover{ transform: translate(-50%,-50%) scale(1.05); }
+
+/* ---------------- BOSS FIGHT (3D) ---------------- */
+
+#scene-boss{ background:#000; }
+#stage{ position:absolute; inset:0; }
+#stage canvas{ display:block; width:100%; height:100%; touch-action:none; }
+
+.hud{
+  position:absolute; top:0; left:0; right:0; display:flex; flex-direction:column; align-items:center; gap:10px;
+  padding-top:20px; z-index:6; pointer-events:none;
+  background: linear-gradient(180deg, rgba(4,2,8,0.65) 0%, rgba(4,2,8,0.3) 55%, rgba(4,2,8,0) 100%);
+  padding-bottom:26px;
+}
+
+.boss-bar-wrap{ display:flex; flex-direction:column; align-items:center; gap:8px; position:relative; }
+.boss-bar-frame{
+  position:relative;
+  padding:7px 20px;
+  border-radius:3px;
+  background: linear-gradient(180deg, rgba(40,20,60,0.6), rgba(12,6,20,0.6));
+  box-shadow: 0 0 0 1px rgba(210,180,255,0.4), 0 0 26px rgba(150,100,230,0.4), inset 0 0 14px rgba(150,100,230,0.15);
+}
+.boss-bar-frame::before, .boss-bar-frame::after{
+  content:''; position:absolute; width:9px; height:9px; border:1.5px solid rgba(230,210,255,0.85);
+}
+.boss-bar-frame::before{ top:-1.5px; left:-1.5px; border-right:none; border-bottom:none; }
+.boss-bar-frame::after{ top:-1.5px; right:-1.5px; border-left:none; border-bottom:none; }
+.health-bar{
+  position:relative;
+  width:min(74vw, 600px); height:15px; border-radius:2px; background:rgba(255,255,255,0.07);
+  overflow:hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16);
+}
+.health-bar .fill{ position:absolute; inset:0; width:100%; transition: width 0.25s ease; }
+.boss-health .fill.trail{ background:#ffffff; transition: width 0.6s ease 0.15s; z-index:1; }
+.boss-health .fill:not(.trail){
+  background: linear-gradient(90deg,#5f3fb0,#a878ee 55%,#e8c0ff);
+  box-shadow: 0 0 14px rgba(200,150,255,0.65);
+  z-index:2;
+}
+.boss-health.enrage .fill:not(.trail){
+  background: linear-gradient(90deg,#0a0512,#3a1f6a 55%,#c9a0ff);
+  box-shadow: 0 0 16px rgba(180,120,255,0.75);
+  animation: enragePulse 0.6s ease-in-out infinite;
+}
+@keyframes enragePulse{ 0%,100%{ filter:brightness(1);} 50%{ filter:brightness(1.35);} }
+.boss-health .segments{
+  position:absolute; inset:0; z-index:3; pointer-events:none;
+  background-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(10% - 2px), rgba(10,6,16,0.6) calc(10% - 2px), rgba(10,6,16,0.6) 10%);
+}
+.phase-pips{ display:flex; gap:9px; }
+.phase-pips i{
+  width:6px; height:6px; background:rgba(255,255,255,0.18);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3);
+  transform:rotate(45deg);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.phase-pips i.active{ background:#ffffff; box-shadow:0 0 9px #d9c2ff; transform:rotate(45deg) scale(1.4); }
+
+.player-health{ width:96px; height:4px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); border-radius:1px; }
+.player-health .fill{ background: linear-gradient(90deg,#c9a8ff,#ffffff); }
+
+.exit-btn{
+  position:absolute; top:16px; right:16px; width:32px; height:32px; border:1px solid rgba(210,180,255,0.35);
+  background:rgba(10,5,16,0.4); cursor:pointer; z-index:6; pointer-events:auto; transition: background 0.2s ease, transform 0.2s ease;
+}
+.exit-btn svg{ width:58%; height:58%; margin:21%; }
+.exit-btn path{ stroke:rgba(235,225,255,0.75); stroke-width:2; }
+.exit-btn:hover{ background:rgba(150,100,230,0.25); transform:scale(1.08); }
+
+.result-sigil{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  pointer-events:none; opacity:0; transition:opacity 0.6s ease;
+  font-size:0;
+}
+.result-sigil.show{ opacity:1; }
+.result-sigil .glow{
+  width:120px; height:120px; border-radius:50%;
+  box-shadow:0 0 60px 20px currentColor;
+}
+
+@media (max-width: 700px){
+  .health-bar{ height:13px; }
+}
